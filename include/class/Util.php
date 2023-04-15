@@ -824,6 +824,7 @@ class Util
 	}
 
 	static function update($argv) {
+        _log("UPDATE");
 		$branch = trim($argv[2]);
 		$force = trim($argv[3]);
 		if(empty($branch)) {
