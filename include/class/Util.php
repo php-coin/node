@@ -840,10 +840,6 @@ class Util
 		$version = intval($version);
 		if($version > $currentVersion || $build_number > $currentVersion || !empty($force)) {
 			echo "There is new version: $version - updating node".PHP_EOL;
-			//temp fix apps
-//			$cmd="cd ".ROOT." && rm -rf web/apps";
-//			$res = shell_exec($cmd);
-//			_log("cmd=$cmd res=$res", 5);
 
 			$cmd="cd ".ROOT." && git restore .";
 			$res = shell_exec($cmd);
@@ -853,29 +849,22 @@ class Util
 			$res = shell_exec($cmd);
 			_log("cmd=$cmd res=$res", 5);
 
-			//temp fix apps
 			$cmd="cd ".ROOT." && git pull origin $branch";
 			$res = shell_exec($cmd);
 			_log("cmd=$cmd res=$res", 5);
 
-            $block = Block::get(1);
-            if($block['id']=="2ucwGhYszGUTZwmiT5YMsw3tn9nfhdTciaaKMMTX77Zw") {
-                $chain_id = "00";
-            } else {
-                $chain_id = "01";
+            $chain_id_file = ROOT . "/chain_id";
+            $chain_id = trim(file_get_contents($chain_id_file));
+            if(empty($chain_id)) {
+                $block = Block::get(1);
+                if($block['id']=="2ucwGhYszGUTZwmiT5YMsw3tn9nfhdTciaaKMMTX77Zw") {
+                    $chain_id = "00";
+                } else {
+                    $chain_id = "01";
+                }
             }
+            file_put_contents($chain_id_file, $chain_id);
 
-            $cmd = "cd ".ROOT." && echo \"$chain_id\" > chain_id";
-            $res = shell_exec($cmd);
-            _log("cmd=$cmd res=$res", 5);
-
-//			Util::recalculateMasternodes();
-
-//			$cmd="cd ".ROOT." && chown -R www-data:www-data web";
-//			$res = shell_exec($cmd);
-//			_log("cmd=$cmd res=$res", 5);
-			//$cmd="cd ".ROOT." && php cli/util.php download-apps";
-			//$res = shell_exec($cmd);
 			echo "Node updated".PHP_EOL;
 		} else {
 			echo "There is no new version".PHP_EOL;
