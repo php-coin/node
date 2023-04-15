@@ -101,6 +101,10 @@ class Daemon
         }
     }
 
+    static function isDbNeeded() {
+        return true;
+    }
+
 	static function runDaemon() {
 
 		global $_config;
@@ -161,26 +165,30 @@ class Daemon
 			_log("Daemon: $name - running loop", 5);
 			$t1 = microtime(true);
 
-            $db = new DB($_config['db_connect'], $_config['db_user'], $_config['db_pass'], $_config['enable_logging']);
-            if (!$db) {
-                _log("Daemon: can not connect database");
-                break;
-            }
-            if($db->isSqlite()) {
-                $db->exec('PRAGMA journal_mode=WAL;');
-                $db->exec("PRAGMA busy_timeout=5000");
-            } else {
-//                $db->exec('set SESSION innodb_lock_wait_timeout=30');
-            }
+            if(static::isDbNeeded()) {
+                $db = new DB($_config['db_connect'], $_config['db_user'], $_config['db_pass'], $_config['enable_logging']);
+                if (!$db) {
+                    _log("Daemon: can not connect database");
+                    break;
+                }
+                if($db->isSqlite()) {
+                    $db->exec('PRAGMA journal_mode=WAL;');
+                    $db->exec("PRAGMA busy_timeout=5000");
+                } else {
+    //                $db->exec('set SESSION innodb_lock_wait_timeout=30');
+                }
 
-			global $_config;
-			$_config = load_db_config();
+                global $_config;
+                $_config = load_db_config();
+            }
 
 			try {
 				static::process();
 				self::clearError();
                 _logr();
-                $db = null;
+                if(static::isDbNeeded()) {
+                    $db = null;
+                }
 
 			} catch (Exception $e) {
 				_log("Daemon: $name: error in process ".$e->getMessage());
