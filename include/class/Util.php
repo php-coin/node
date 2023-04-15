@@ -831,7 +831,7 @@ class Util
 			$branch = "main";
 		}
 		$currentVersion = BUILD_VERSION;
-		echo "Checking node update current version = ".BUILD_VERSION.PHP_EOL;
+		_log("Checking node update current version = ".BUILD_VERSION);
 		$build_number = Peer::getMaxBuildNumber();
 		$cmd= "curl -H 'Cache-Control: no-cache, no-store' -s https://raw.githubusercontent.com/phpcoinn/node/$branch/include/coinspec.inc.php | grep BUILD_VERSION";
 		$res = shell_exec($cmd);
@@ -840,7 +840,7 @@ class Util
 		$version = str_replace(";", "", $version);
 		$version = intval($version);
 		if($version > $currentVersion || $build_number > $currentVersion || !empty($force)) {
-			echo "There is new version: $version - updating node".PHP_EOL;
+			_log("There is new version: $version - updating node");
 
 			$cmd="cd ".ROOT." && git restore .";
 			$res = shell_exec($cmd);
@@ -865,10 +865,9 @@ class Util
                 }
             }
             file_put_contents($chain_id_file, $chain_id);
-
-			echo "Node updated".PHP_EOL;
+			_log("Node updated");
 		} else {
-			echo "There is no new version".PHP_EOL;
+			_log("There is no new version");
 		}
 //		Job::runJobs();
 //		Util::downloadDapps(null);
