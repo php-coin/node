@@ -880,14 +880,14 @@ class Util
 		} else {
 			echo "There is no new version".PHP_EOL;
 		}
-		Job::runJobs();
-		Util::downloadDapps(null);
-		Cache::resetCache();
-		Peer::deleteBlacklisted();
-		Peer::deleteWrongHostnames();
-		Dapps::createDir();
-		$mnCount = Masternode::getCount();
-		echo "Finished".PHP_EOL;
+//		Job::runJobs();
+//		Util::downloadDapps(null);
+//		Cache::resetCache();
+//		Peer::deleteBlacklisted();
+//		Peer::deleteWrongHostnames();
+//		Dapps::createDir();
+//		$mnCount = Masternode::getCount();
+//		echo "Finished".PHP_EOL;
 	}
 
 	static function checkMasternode() {
