@@ -830,7 +830,7 @@ class Util
 			$branch = "main";
 		}
 		$currentVersion = BUILD_VERSION;
-		$build_number = Peer::getMaxBuildNumber();
+		$maxBuildNumber = Peer::getMaxBuildNumber();
         $now = time();
 		$cmd= "curl -H 'Cache-Control: no-cache, no-store' -s https://raw.githubusercontent.com/phpcoinn/node/$branch/include/coinspec.inc.php?t=$now | grep BUILD_VERSION";
 		$res = shell_exec($cmd);
@@ -838,9 +838,20 @@ class Util
 		$version = $arr[3];
 		$version = str_replace(";", "", $version);
 		$version = intval($version);
-        _log("Checking node update version=$version currentVersion=".BUILD_VERSION . " maxBuildNumber=$build_number force=$force");
-		if($version > $currentVersion || $build_number > $currentVersion || !empty($force)) {
+        _log("Checking node update version=$version currentVersion=".BUILD_VERSION . " maxBuildNumber=$maxBuildNumber force=$force");
+		if($version > $currentVersion || $maxBuildNumber > $currentVersion || !empty($force)) {
 			_log("There is new version: $version - updating node");
+
+            $chain_id_file = ROOT . "/chain_id";
+            $chain_id = trim(file_get_contents($chain_id_file));
+            if(empty($chain_id)) {
+                $block = Block::get(1);
+                if($block['id']=="2ucwGhYszGUTZwmiT5YMsw3tn9nfhdTciaaKMMTX77Zw") {
+                    $chain_id = "00";
+                } else {
+                    $chain_id = "01";
+                }
+            }
 
 			$cmd="cd ".ROOT." && git restore .";
 			$res = shell_exec($cmd);
@@ -854,16 +865,6 @@ class Util
 			$res = shell_exec($cmd);
 			_log("cmd=$cmd res=$res", 5);
 
-            $chain_id_file = ROOT . "/chain_id";
-            $chain_id = trim(file_get_contents($chain_id_file));
-            if(empty($chain_id)) {
-                $block = Block::get(1);
-                if($block['id']=="2ucwGhYszGUTZwmiT5YMsw3tn9nfhdTciaaKMMTX77Zw") {
-                    $chain_id = "00";
-                } else {
-                    $chain_id = "01";
-                }
-            }
             file_put_contents($chain_id_file, $chain_id);
 			_log("Node updated");
 		} else {
