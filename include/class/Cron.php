@@ -27,7 +27,7 @@ class Cron extends Daemon
         $min = intval(date("i"));
 
 //        if($min % 5 == 0) {
-            Nodeutil::runSingleProcess("php ".ROOT."/cli/util.php update auto_update 1");
+            Nodeutil::runSingleProcess("php ".ROOT."/cli/util.php update auto_update");
 //        }
 
     }
