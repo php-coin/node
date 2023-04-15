@@ -831,7 +831,6 @@ class Util
 			$branch = "main";
 		}
 		$currentVersion = BUILD_VERSION;
-		_log("Checking node update current version = ".BUILD_VERSION);
 		$build_number = Peer::getMaxBuildNumber();
 		$cmd= "curl -H 'Cache-Control: no-cache, no-store' -s https://raw.githubusercontent.com/phpcoinn/node/$branch/include/coinspec.inc.php | grep BUILD_VERSION";
 		$res = shell_exec($cmd);
@@ -839,6 +838,7 @@ class Util
 		$version = $arr[3];
 		$version = str_replace(";", "", $version);
 		$version = intval($version);
+        _log("Checking node update version=$version currentVersion=".BUILD_VERSION . " maxBuildNumber=$build_number force=$force");
 		if($version > $currentVersion || $build_number > $currentVersion || !empty($force)) {
 			_log("There is new version: $version - updating node");
 
