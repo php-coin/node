@@ -824,7 +824,6 @@ class Util
 	}
 
 	static function update($argv) {
-        _log("UPDATE");
 		$branch = trim($argv[2]);
 		$force = trim($argv[3]);
 		if(empty($branch)) {
@@ -832,7 +831,8 @@ class Util
 		}
 		$currentVersion = BUILD_VERSION;
 		$build_number = Peer::getMaxBuildNumber();
-		$cmd= "curl -H 'Cache-Control: no-cache, no-store' -s https://raw.githubusercontent.com/phpcoinn/node/$branch/include/coinspec.inc.php | grep BUILD_VERSION";
+        $now = time();
+		$cmd= "curl -H 'Cache-Control: no-cache, no-store' -s https://raw.githubusercontent.com/phpcoinn/node/$branch/include/coinspec.inc.php?t=$now | grep BUILD_VERSION";
 		$res = shell_exec($cmd);
 		$arr= explode(" ", $res);
 		$version = $arr[3];
